@@ -49,6 +49,8 @@ Real Gain/Loss (kg): The adjusted gain/loss after considering water retention.
 Acknowledgements
 Kipchoge the greatest runner alive!
 
+![Screenshot 2024-12-08 065558](https://github.com/user-attachments/assets/5f64042a-a077-42b8-9750-2dbd2f2813e3)
+![Screenshot 2024-12-08 065537](https://github.com/user-attachments/assets/04eb3167-7f66-4cd0-91bf-30da552734ac)
 
 
 If you enjoy this program, buy me a coffee https://buymeacoffee.com/siglabo
