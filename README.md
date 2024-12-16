@@ -1,9 +1,9 @@
 # WeightWise
-WeightWise 1.7
+WeightWise 2.0
  
  
  
-WeightWise v1.7 is a PyQt5-based desktop application designed to help users track their weight loss or gain journey, estimate water retention, and manage health goals. The application features an interactive user interface where users can input their current weight, set target weight goals, and track their progress over time. The app also considers factors such as water retention based on lifestyle inputs, including diet and physical activity levels.
+WeightWise v2.0 is a PyQt5-based desktop application designed to help users track their weight loss or gain journey, estimate water retention, and manage health goals. The application features an interactive user interface where users can input their current weight, set target weight goals, and track their progress over time. The app also considers factors such as water retention based on lifestyle inputs, including diet and physical activity levels.
 
 Features
 Weight Tracking: Input your daily weight records and monitor progress towards your target weight.
@@ -45,6 +45,7 @@ Weight (kg): The recorded weight.
 Gain/Loss to Target (kg): The difference between the recorded weight and target weight.
 Real Gain/Loss (kg): The adjusted gain/loss after considering water retention.
 
+Patch 2.0 warns the user with dietary advice, when excess is above 10 kilos
 
 Acknowledgements
 Kipchoge the greatest runner alive!

@@ -93,7 +93,7 @@ class WaterRetentionDialog(QDialog):
 class WeightTrackerApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("WeightWise v1.7")
+        self.setWindowTitle("WeightWise v2.0")
         self.setGeometry(100, 100, 600, 500)
         self.setWindowIcon(QIcon("logo.ico"))
 
@@ -125,7 +125,7 @@ class WeightTrackerApp(QWidget):
         """Initialize the UI components."""
         main_layout = QVBoxLayout()
 
-        title = QLabel("WeightWise v1.7")
+        title = QLabel("WeightWise v2.0")
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet("font-size: 24px; font-weight: bold; margin: 10px;")
         main_layout.addWidget(title)
@@ -184,6 +184,78 @@ class WeightTrackerApp(QWidget):
         button = QPushButton(text)
         button.clicked.connect(action)
         return button
+        
+        
+    def check_weight_warning(self):
+        if self.table.rowCount() < 1:
+            return  # No rows to check
+    
+        # Get the last row and the value in the "Real Gain/Loss" column
+        last_row = self.table.rowCount() - 1
+        real_gain_loss_item = self.table.item(last_row, 3)  # Column index for "Real Gain/Loss"
+    
+        if real_gain_loss_item is None:
+            return  # No item in the last row, column 3
+    
+        # Extract and clean the value from the last row
+        real_gain_loss_text = real_gain_loss_item.text()
+    
+        try:
+            # Convert to float after cleaning up text
+            real_gain_loss_value = float(real_gain_loss_text.replace('+', '').replace('-', '').replace(' kg', ''))
+        except ValueError:
+            return  # Handle conversion error if text is not a valid float
+    
+        # Check if the absolute value exceeds the threshold
+        if abs(real_gain_loss_value) > 10:
+            warning_message = f"Your last real gain/loss value is {real_gain_loss_text}."
+            dietary_advice = "Consider reducing your calorie intake or increasing your activity level."
+            self.show_warning_dialog(warning_message, dietary_advice)
+ 
+ 
+    def show_warning_dialog(self, message, dietary_advice):
+        """Show a fancy warning dialog with dietary advice."""
+        # Create a custom dialog
+        warning_dialog = QDialog(self)
+        warning_dialog.setWindowTitle("Weight Warning")
+        warning_dialog.setGeometry(300, 300, 400, 300)
+    
+        # Layout for the dialog
+        layout = QVBoxLayout()
+    
+        # Add a warning icon and message
+        icon_label = QLabel()
+        icon_label.setPixmap(QIcon("warning_icon.png").pixmap(64, 64))  # Replace with your icon path
+        icon_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(icon_label)
+    
+        # Add the main warning message
+        warning_label = QLabel(f"<h2 style='color: red;'>{message}</h2>")
+        warning_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(warning_label)
+    
+        # Add dietary advice
+        advice_label = QLabel(f"""
+            <h3>Dietary Advice</h3>
+            <p>{dietary_advice}</p>
+            <ul>
+                <li>Reduce sodium intake to prevent water retention.</li>
+                <li>Focus on whole foods like vegetables and lean proteins.</li>
+                <li>Drink plenty of water to stay hydrated.</li>
+                <li>Consult a dietitian for a personalized plan.</li>
+            </ul>
+        """)
+        advice_label.setWordWrap(True)
+        layout.addWidget(advice_label)
+    
+        # Add a button to close the dialog
+        close_button = QPushButton("Got It!")
+        close_button.clicked.connect(warning_dialog.accept)
+        layout.addWidget(close_button)
+    
+        # Apply layout to dialog
+        warning_dialog.setLayout(layout)
+        warning_dialog.exec_()   
 
     def create_table(self):
         """Create table for displaying weight records."""
@@ -196,24 +268,27 @@ class WeightTrackerApp(QWidget):
     def load_table(self):
         """Load data into the table."""
         self.table.setRowCount(0)  # Clear existing rows
-        
+    
         # Apply and update water retention decay
         decayed_retention = self.get_current_water_retention()  # Update and get current retention factor
-        
+    
         for row, (date, weight) in enumerate(sorted(self.weight_data.items())):
             if date in ["target_weight", "water_retention", "last_water_retention_date"]:
                 continue  # Skip non-record entries
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(date))
             self.table.setItem(row, 1, QTableWidgetItem(str(weight)))
-            
+    
             # Calculate differences using decayed retention
             difference = float(weight) - self.target_weight
             real_difference = min(difference * decayed_retention, difference + 10)  # Cap at 10kg additional water
-        
+    
             # Populate table with calculated differences
             self.table.setItem(row, 2, QTableWidgetItem(f"{difference:+.2f} kg"))
             self.table.setItem(row, 3, QTableWidgetItem(f"{real_difference:+.2f} kg"))
+    
+        # Check warning for the last row only
+        self.check_weight_warning()
 
     def get_current_water_retention(self):
         """Get and update the current water retention factor based on time decay."""
@@ -277,7 +352,10 @@ class WeightTrackerApp(QWidget):
         
         # Refresh table to apply updated retention factor
         self.load_table()
+        self.check_weight_warning()  # Add this line
+
         self.weight_input.clear()
+        
         QMessageBox.information(self, "Record Added", f"Added: {selected_date} -> {weight} kg")
     
     def calculate_new_water_retention_factor(self):
@@ -321,7 +399,7 @@ class WeightTrackerApp(QWidget):
     def show_about_dialog(self):
         """Show the about dialog with clickable links."""
         about_dialog = QDialog(self)
-        about_dialog.setWindowTitle("About WeightWise v1.7")
+        about_dialog.setWindowTitle("About WeightWise v2.0")
         about_dialog.setGeometry(200, 200, 400, 300)
         about_dialog.setWindowState(Qt.WindowMaximized)
 
@@ -331,7 +409,7 @@ class WeightTrackerApp(QWidget):
     
         # Create a QTextBrowser to allow rich HTML content with clickable links
         about_text = """
-        <h2>WeightWise v1.7</h2>
+        <h2>WeightWise v2.0</h2>
         <p><b>Developed by:</b> Peter De Ceuster</p>
         <p>This application helps you track your weight and manage your target weight with water retention estimates.</p>
         <p>For more information:</p>
